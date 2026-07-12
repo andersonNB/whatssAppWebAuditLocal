@@ -1,0 +1,18 @@
+{
+  "name": "whatsapp-web-audit-local",
+  "version": "1.0.0",
+  "description": "Sistema local para registrar mensajes de WhatsApp Web desde Firefox y almacenarlos en SQLite.",
+  "main": "backend/src/server.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node backend/src/server.js",
+    "test": "node --test backend/test/*.test.js"
+  },
+  "dependencies": {
+    "better-sqlite3": "^11.7.0",
+    "exceljs": "^4.4.0",
+    "express": "^4.21.2",
+    "node-cron": "^3.0.3",
+    "nodemailer": "^6.10.0"
+  }
+}
