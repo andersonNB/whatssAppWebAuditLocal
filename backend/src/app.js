@@ -8,6 +8,7 @@ const { createMessageService } = require("./services/messageService");
 const { createSidebarEventService } = require("./services/sidebarEventService");
 const { createExportService } = require("./services/exportService");
 const { createMailService } = require("./services/mailService");
+const { createMaintenanceService } = require("./services/maintenanceService");
 const { createSchedulerService } = require("./services/schedulerService");
 const { createRouter } = require("./api/routes");
 
@@ -33,9 +34,17 @@ function buildApp() {
   const messageService = createMessageService(messagesRepository, sidebarEventService);
   const exportService = createExportService(messagesRepository, config.storage.exportDir);
   const mailService = createMailService(config.smtp, logger);
+  const maintenanceService = createMaintenanceService({
+    messagesRepository,
+    sidebarEventsRepository,
+    exportService,
+    config,
+    logger
+  });
   const schedulerService = createSchedulerService({
     config,
     exportService,
+    maintenanceService,
     mailService,
     logger
   });
@@ -62,7 +71,14 @@ function buildApp() {
     next();
   });
 
-  app.use(createRouter({ messageService, sidebarEventService, exportService, config, db }));
+  app.use(createRouter({
+    messageService,
+    sidebarEventService,
+    exportService,
+    maintenanceService,
+    config,
+    db
+  }));
 
   app.use((error, _request, response, _next) => {
     const statusCode = error.message.includes("required") || error.message.includes("must be")

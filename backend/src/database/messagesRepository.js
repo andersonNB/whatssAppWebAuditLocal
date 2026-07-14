@@ -39,6 +39,7 @@ function createMessagesRepository(db) {
 
   const findByUidStatement = db.prepare("SELECT * FROM messages WHERE message_uid = ?");
   const findByIdStatement = db.prepare("SELECT * FROM messages WHERE id = ?");
+  const clearAllStatement = db.prepare("DELETE FROM messages");
 
   function buildListQuery(filters = {}) {
     const clauses = [];
@@ -149,6 +150,10 @@ function createMessagesRepository(db) {
     count(filters) {
       const { sql, params } = buildCountQuery(filters);
       return db.prepare(sql).get(params).total;
+    },
+    clearAll() {
+      const result = clearAllStatement.run();
+      return result.changes;
     }
   };
 }

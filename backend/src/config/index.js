@@ -36,6 +36,12 @@ const config = {
     cronEnabled: asBoolean(process.env.EXPORT_CRON_ENABLED, false),
     cronExpression: process.env.EXPORT_CRON_EXPRESSION || "0 * * * *"
   },
+  maintenance: {
+    purgeEnabled: asBoolean(process.env.PURGE_CRON_ENABLED, false),
+    purgeCronExpression: process.env.PURGE_CRON_EXPRESSION || "0 21 * * *",
+    exportBeforePurge: asBoolean(process.env.PURGE_EXPORT_BEFORE, true),
+    timezone: process.env.CRON_TIMEZONE || "America/Bogota"
+  },
   smtp: {
     enabled: asBoolean(process.env.SMTP_ENABLED, false),
     host: process.env.SMTP_HOST || "",

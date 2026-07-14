@@ -340,7 +340,7 @@ function buildSidebarEventsViewHtml(result, query) {
 </html>`;
 }
 
-function createRouter({ messageService, sidebarEventService, exportService, config, db }) {
+function createRouter({ messageService, sidebarEventService, exportService, maintenanceService, config, db }) {
   const router = express.Router();
 
   router.get("/health", (_request, response) => {
@@ -442,6 +442,25 @@ function createRouter({ messageService, sidebarEventService, exportService, conf
       response.json({
         format,
         filePath
+      });
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  router.post("/maintenance/purge", async (request, response, next) => {
+    try {
+      const exportFirst = request.query.exportFirst === undefined
+        ? undefined
+        : request.query.exportFirst === "true";
+
+      const result = await maintenanceService.purgeAll({
+        exportFirst
+      });
+
+      response.json({
+        ok: true,
+        ...result
       });
     } catch (error) {
       next(error);

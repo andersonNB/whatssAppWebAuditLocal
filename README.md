@@ -22,6 +22,12 @@ npm install
 npm start
 ```
 
+Con purga diaria automatica a las 9:00 p. m.:
+
+```bash
+pnpm run start:purge
+```
+
 Backend por defecto:
 
 - `http://127.0.0.1:43177`
@@ -39,6 +45,7 @@ Backend por defecto:
 - `GET /sidebar-events/:id`
 - `GET /sidebar-events/view`
 - `GET /export?format=xlsx|csv|txt`
+- `POST /maintenance/purge`
 - `GET /health`
 
 ## Extension Firefox
@@ -57,6 +64,22 @@ Backend por defecto:
 $env:PORT=43177
 npm start
 ```
+
+## Purga diaria opcional
+
+Si quieres que el backend exporte y luego vacie la base cada dia a las 9:00 p. m.:
+
+Ese mismo flujo ya quedo resumido en:
+
+```bash
+pnpm run start:purge
+```
+
+Notas de esta purga:
+
+- vacia `messages` y `sidebar_events`
+- por defecto exporta antes de purgar usando el formato configurado en `DEFAULT_EXPORT_FORMAT`
+- si quieres lanzarla manualmente, usa `POST http://127.0.0.1:43177/maintenance/purge`
 
 ## Notas
 

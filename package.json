@@ -6,6 +6,7 @@
   "type": "commonjs",
   "scripts": {
     "start": "node backend/src/server.js",
+    "start:purge": "set \"PURGE_CRON_ENABLED=true\" && set \"PURGE_CRON_EXPRESSION=0 21 * * *\" && set \"PURGE_EXPORT_BEFORE=true\" && set \"CRON_TIMEZONE=America/Bogota\" && node backend/src/server.js",
     "test": "node --test backend/test/*.test.js"
   },
   "dependencies": {

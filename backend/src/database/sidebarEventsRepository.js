@@ -50,6 +50,7 @@ function createSidebarEventsRepository(db) {
     ORDER BY captured_at DESC
   `);
   const reconcileStatement = db.prepare("UPDATE sidebar_events SET reconciled_message_id = @messageId WHERE id = @id");
+  const clearAllStatement = db.prepare("DELETE FROM sidebar_events");
 
   function buildListQuery(filters = {}) {
     const clauses = [];
@@ -143,6 +144,10 @@ function createSidebarEventsRepository(db) {
     },
     reconcile(id, messageId) {
       reconcileStatement.run({ id, messageId });
+    },
+    clearAll() {
+      const result = clearAllStatement.run();
+      return result.changes;
     }
   };
 }
