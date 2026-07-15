@@ -1,4 +1,16 @@
-function createMaintenanceService({ messagesRepository, sidebarEventsRepository, exportService, config, logger }) {
+function createMaintenanceService({ db, messagesRepository, sidebarEventsRepository, exportService, config, logger }) {
+  const purgeTransaction = db.transaction(() => {
+    const sidebarDeleted = sidebarEventsRepository.clearAll();
+    const messagesDeleted = messagesRepository.clearAll();
+
+    db.prepare("DELETE FROM sqlite_sequence WHERE name IN ('messages', 'sidebar_events')").run();
+
+    return {
+      messagesDeleted,
+      sidebarDeleted
+    };
+  });
+
   return {
     async purgeAll(options = {}) {
       const exportFirst = options.exportFirst !== undefined
@@ -13,19 +25,20 @@ function createMaintenanceService({ messagesRepository, sidebarEventsRepository,
         });
       }
 
-      const sidebarDeleted = sidebarEventsRepository.clearAll();
-      const messagesDeleted = messagesRepository.clearAll();
+      const { sidebarDeleted, messagesDeleted } = purgeTransaction();
 
       logger.info("Maintenance purge completed.", {
         exportedFilePath,
         messagesDeleted,
-        sidebarDeleted
+        sidebarDeleted,
+        resetSequences: true
       });
 
       return {
         exportedFilePath,
         messagesDeleted,
-        sidebarDeleted
+        sidebarDeleted,
+        resetSequences: true
       };
     }
   };

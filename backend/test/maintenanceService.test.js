@@ -26,6 +26,7 @@ function createTempContext(testName) {
   const exportService = createExportService(messagesRepository, exportDir);
   const logs = [];
   const maintenanceService = createMaintenanceService({
+    db,
     messagesRepository,
     sidebarEventsRepository,
     exportService,
@@ -102,10 +103,35 @@ test("purgeAll exports current messages and clears both tables", async () => {
 
     assert.equal(result.messagesDeleted, 1);
     assert.equal(result.sidebarDeleted, 1);
+    assert.equal(result.resetSequences, true);
     assert.equal(context.messagesRepository.count({}), 0);
     assert.equal(context.sidebarEventsRepository.count({}), 0);
     assert.equal(exportedFiles.length, 1);
     assert.ok(result.exportedFilePath.endsWith(".txt"));
+
+    const sequenceRows = context.db.prepare("SELECT name, seq FROM sqlite_sequence ORDER BY name").all();
+    assert.deepEqual(sequenceRows, []);
+
+    const insertedMessage = context.messagesRepository.insert({
+      messageUid: "msg-2",
+      chatKey: "contact:bob",
+      externalMessageId: null,
+      timestamp: "2026-07-13T13:00:00.000Z",
+      date: "2026-07-13",
+      time: "08:00",
+      contactName: "Bob",
+      phoneNumber: null,
+      groupName: null,
+      conversationType: "direct",
+      message: "Nuevo",
+      messageType: "text",
+      direction: "incoming",
+      status: null,
+      capturedAt: "2026-07-13T13:00:01.000Z",
+      rawPayload: "{}"
+    });
+
+    assert.equal(Number(insertedMessage.id), 1);
   } finally {
     cleanupTempContext(context);
   }

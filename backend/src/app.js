@@ -35,6 +35,7 @@ function buildApp() {
   const exportService = createExportService(messagesRepository, config.storage.exportDir);
   const mailService = createMailService(config.smtp, logger);
   const maintenanceService = createMaintenanceService({
+    db,
     messagesRepository,
     sidebarEventsRepository,
     exportService,
